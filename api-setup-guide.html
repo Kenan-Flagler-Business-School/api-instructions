@@ -638,7 +638,7 @@ function buildCode(integration) {
 function buildCard(integration) {
   const steps = integration.steps.map(s => `<li>${esc(s)}</li>`).join('');
   return `
-    <div class="card" id="card-${integration.id}">
+    <div class="card collapsed" id="card-${integration.id}">
       <div class="card-header" onclick="toggleCard('${integration.id}')">
         <div class="card-icon">${integration.icon}</div>
         <div>
