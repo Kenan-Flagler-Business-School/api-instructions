@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Environment Setup Guide</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:    #2563eb;
+    --blue-lt: #eff6ff;
+    --blue-dk: #1d4ed8;
+    --gray-50: #f8fafc;
+    --gray-100:#f1f5f9;
+    --gray-200:#e2e8f0;
+    --gray-400:#94a3b8;
+    --gray-600:#475569;
+    --gray-800:#1e293b;
+    --gray-900:#0f172a;
+    --green:   #16a34a;
+    --code-bg: #1e1e2e;
+    --code-fg: #cdd6f4;
+    --radius:  8px;
+    --shadow:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-800);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── Header ─────────────────────────────────────────── */
+  header {
+    background: var(--gray-900);
+    color: #fff;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  header svg { flex-shrink: 0; opacity: .85; }
+  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -.2px; }
+  header p  { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+  /* ── Layout ──────────────────────────────────────────── */
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    padding: 24px 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  /* ── Sidebar ─────────────────────────────────────────── */
+  .sidebar {
+    position: sticky;
+    top: 24px;
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .sidebar-title {
+    background: var(--blue);
+    color: #fff;
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+  }
+  .sidebar-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 5px; }
+
+  input[type="text"], input[type="password"], select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--gray-50);
+    transition: border-color .15s, box-shadow .15s;
+    outline: none;
+  }
+  input:focus, select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    background: #fff;
+  }
+
+  .input-wrap { position: relative; }
+  .input-wrap input { padding-right: 36px; }
+  .toggle-eye {
+    position: absolute;
+    right: 8px; top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-400);
+    padding: 2px;
+    display: flex;
+    align-items: center;
+  }
+  .toggle-eye:hover { color: var(--gray-600); }
+
+  .hint { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+  .sidebar-divider {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 2px 0;
+  }
+
+  .preview-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--blue-lt);
+    color: var(--blue);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .preview-pill span { word-break: break-all; }
+
+  /* ── Integration cards ───────────────────────────────── */
+  .cards { display: flex; flex-direction: column; gap: 20px; }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--gray-200);
+    cursor: pointer;
+    user-select: none;
+  }
+  .card-header:hover { background: var(--gray-50); }
+  .card-icon {
+    width: 36px; height: 36px;
+    background: var(--blue-lt);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .card-title { font-size: 15px; font-weight: 600; }
+  .card-desc  { font-size: 12px; color: var(--gray-600); margin-top: 2px; }
+  .card-chevron {
+    margin-left: auto;
+    color: var(--gray-400);
+    transition: transform .2s;
+    flex-shrink: 0;
+  }
+  .card.collapsed .card-chevron { transform: rotate(-90deg); }
+  .card-body { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+  .card.collapsed .card-body { display: none; }
+
+  /* steps */
+  .steps-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--gray-400); margin-bottom: 10px; }
+  ol.steps { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; counter-reset: step-counter; }
+  ol.steps li {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 13px; color: var(--gray-600);
+    counter-increment: step-counter;
+  }
+  ol.steps li::before {
+    content: counter(step-counter);
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--blue-lt);
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+
+  /* code blocks */
+  .code-group { display: flex; flex-direction: column; gap: 10px; }
+  .code-block-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .code-wrap {
+    background: var(--code-bg);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .code-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: rgba(255,255,255,.05);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .code-lang { font-size: 11px; color: #89b4fa; font-family: monospace; }
+  .copy-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    color: #cdd6f4;
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,.14); }
+  .copy-btn.copied { color: #a6e3a1; border-color: rgba(166,227,161,.3); }
+  pre {
+    margin: 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--code-fg);
+    white-space: pre;
+  }
+
+  /* placeholder highlight */
+  .ph { color: #f9e2af; font-weight: 600; }
+
+  /* ── Responsive ──────────────────────────────────────── */
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect width="32" height="32" rx="8" fill="#2563eb"/>
+    <path d="M8 10h16M8 16h10M8 22h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <div>
+    <h1>API Environment Setup Guide</h1>
+    <p>Enter your credentials to generate ready-to-use configuration snippets</p>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ── Sidebar ────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Your Credentials</div>
+    <div class="sidebar-body">
+
+      <div>
+        <label for="input-endpoint">API Endpoint</label>
+        <input id="input-endpoint" type="text"
+               placeholder="https://your-apim.azure-api.net/..."
+               autocomplete="off" spellcheck="false">
+        <p class="hint">Your Azure APIM gateway URL</p>
+      </div>
+
+      <div>
+        <label for="input-key">API Key</label>
+        <div class="input-wrap">
+          <input id="input-key" type="password"
+                 placeholder="••••••••••••••••"
+                 autocomplete="off" spellcheck="false">
+          <button class="toggle-eye" onclick="toggleKey()" title="Show/hide key">
+            <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <p class="hint">Your APIM subscription key</p>
+      </div>
+
+      <div>
+        <label for="input-model">Default Model</label>
+        <select id="input-model">
+          <!-- ════════════════════════════════════════════════
+               CUSTOMIZE: Update this list with your deployed
+               model names / deployment IDs.
+               ════════════════════════════════════════════════ -->
+          <option value="claude-opus-4-5">claude-opus-4-5</option>
+          <option value="claude-sonnet-4-5" selected>claude-sonnet-4-5</option>
+          <option value="claude-haiku-4-5">claude-haiku-4-5</option>
+          <option value="claude-opus-4">claude-opus-4</option>
+          <option value="claude-sonnet-4">claude-sonnet-4</option>
+          <option value="claude-3-7-sonnet-20250219">claude-3-7-sonnet-20250219</option>
+          <option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet-20241022</option>
+          <option value="claude-3-5-haiku-20241022">claude-3-5-haiku-20241022</option>
+          <option value="gpt-4o">gpt-4o</option>
+          <option value="gpt-4o-mini">gpt-4o-mini</option>
+        </select>
+        <p class="hint">Model identifier sent in API requests</p>
+      </div>
+
+      <hr class="sidebar-divider">
+
+      <div>
+        <div class="steps-label">Active config preview</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div class="preview-pill"><strong>Endpoint</strong><span id="prev-endpoint" style="color:var(--gray-400)">not set</span></div>
+          <div class="preview-pill"><strong>Key</strong><span id="prev-key" style="color:var(--gray-400)">not set</span></div>
+          <div class="preview-pill"><strong>Model</strong><span id="prev-model"></span></div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ── Integration cards ──────────────────────────────── -->
+  <main class="cards" id="cards-root"></main>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+ *  INTEGRATIONS — add a new integration by pushing an object here.
+ *
+ *  Schema:
+ *  {
+ *    id:          string           — unique slug
+ *    name:        string           — card title
+ *    icon:        string           — emoji shown in card icon
+ *    description: string           — one-line subtitle
+ *    steps:       string[]         — ordered human instructions
+ *    configs:     Array<{
+ *      label:  string             — shown above the code block
+ *      lang:   string             — language tag in toolbar (bash, python, yaml, json, …)
+ *      code:   (cfg) => string    — template function
+ *                                   cfg = { endpoint, apiKey, model }
+ *    }>
+ *  }
+ * ══════════════════════════════════════════════════════════════════ */
+const INTEGRATIONS = [
+
+  /* ── 1. Claude Desktop (Cowork) ─────────────────────────────── */
+  {
+    id: "claude-desktop",
+    name: "Claude Desktop (Cowork)",
+    icon: "🖥️",
+    description: "Set environment variables so the Claude desktop app uses your APIM endpoint.",
+    steps: [
+      "Set the environment variables below before launching Claude Desktop.",
+      "On macOS/Linux: add them to your shell profile (~/.zshrc or ~/.bashrc) then restart your terminal.",
+      "On Windows: set them as System or User environment variables via System Properties → Environment Variables, then restart the app.",
+      "Launch Claude Desktop — it will automatically use your APIM endpoint."
+    ],
+    configs: [
+      {
+        label: "macOS / Linux — shell profile (.zshrc / .bashrc)",
+        lang: "bash",
+        code: (c) =>
+`export ANTHROPIC_API_KEY="${c.apiKey}"
+export ANTHROPIC_BASE_URL="${c.endpoint}"
+
+# Reload your shell after editing:
+# source ~/.zshrc`
+      },
+      {
+        label: "Windows — PowerShell (current session)",
+        lang: "powershell",
+        code: (c) =>
+`$env:ANTHROPIC_API_KEY = "${c.apiKey}"
+$env:ANTHROPIC_BASE_URL = "${c.endpoint}"
+
+# To persist permanently, run as Administrator:
+# [System.Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY","${c.apiKey}","User")
+# [System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL","${c.endpoint}","User")`
+      },
+      {
+        label: "Windows — Command Prompt (current session)",
+        lang: "batch",
+        code: (c) =>
+`set ANTHROPIC_API_KEY=${c.apiKey}
+set ANTHROPIC_BASE_URL=${c.endpoint}`
+      }
+    ]
+  },
+
+  /* ── 2. Claude Code VS Code Extension ───────────────────────── */
+  {
+    id: "claude-vscode",
+    name: "Claude Code — VS Code Extension",
+    icon: "🧩",
+    description: "Configure the Claude Code extension to route requests through your APIM gateway.",
+    steps: [
+      "Install the Claude Code extension from the VS Code Marketplace if you haven't already.",
+      "Open VS Code Settings (Ctrl+, / Cmd+,) and search for 'Claude'.",
+      "Alternatively, add the JSON snippet below to your VS Code settings.json (Ctrl+Shift+P → 'Open User Settings JSON').",
+      "Or set the environment variables at the OS level (see Claude Desktop instructions) — the extension inherits them.",
+      "Reload VS Code for settings to take effect."
+    ],
+    configs: [
+      {
+        label: "VS Code settings.json",
+        lang: "json",
+        code: (c) =>
+`{
+  "claude.apiKey": "${c.apiKey}",
+  "claude.apiBaseUrl": "${c.endpoint}"
+}`
+      },
+      {
+        label: "Environment variables (alternative — same as Claude Desktop above)",
+        lang: "bash",
+        code: (c) =>
+`export ANTHROPIC_API_KEY="${c.apiKey}"
+export ANTHROPIC_BASE_URL="${c.endpoint}"`
+      }
+    ]
+  },
+
+  /* ── 3. Continue.dev VS Code Extension ──────────────────────── */
+  {
+    id: "continue-dev",
+    name: "Continue.dev — VS Code Extension",
+    icon: "⚡",
+    description: "Add your APIM-hosted model as a provider in Continue's config file.",
+    steps: [
+      "Install the Continue extension from the VS Code Marketplace.",
+      "Open your Continue config: press Ctrl+Shift+P → 'Continue: Open Config File', or edit ~/.continue/config.yaml directly.",
+      "Add the model block from the snippet below under the 'models' key.",
+      "Save the file — Continue reloads automatically.",
+      "Select your new model from the Continue model switcher in the sidebar."
+    ],
+    configs: [
+      {
+        label: "~/.continue/config.yaml  (add under 'models:')",
+        lang: "yaml",
+        code: (c) =>
+`models:
+  - name: "${c.model} via APIM"
+    provider: openai          # or 'anthropic' if your APIM exposes the native Anthropic API
+    model: "${c.model}"
+    apiKey: "${c.apiKey}"
+    apiBase: "${c.endpoint}"
+    # Optional system prompt:
+    # systemMessage: "You are a helpful assistant."`
+      }
+    ]
+  },
+
+  /* ── 4. Python (OpenAI-compatible client) ───────────────────── */
+  {
+    id: "python",
+    name: "Python — OpenAI-compatible client",
+    icon: "🐍",
+    description: "Use the openai package to call your APIM endpoint from any Python script.",
+    steps: [
+      "Install the openai package if you haven't: pip install openai",
+      "Copy the snippet below into your script.",
+      "Replace the placeholder values or load them from environment variables (recommended for security).",
+      "Run your script — requests are routed through your APIM gateway."
+    ],
+    configs: [
+      {
+        label: "Python script",
+        lang: "python",
+        code: (c) =>
+`import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="${c.apiKey}",
+    base_url="${c.endpoint}",
+)
+
+response = client.chat.completions.create(
+    model="${c.model}",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user",   "content": "Hello! What can you help me with today?"},
+    ],
+)
+
+print(response.choices[0].message.content)`
+      },
+      {
+        label: "Recommended — load credentials from environment variables",
+        lang: "python",
+        code: (c) =>
+`import os
+from openai import OpenAI
+
+# Set these in your shell or .env file — never hard-code secrets in source
+# export APIM_API_KEY="${c.apiKey}"
+# export APIM_BASE_URL="${c.endpoint}"
+
+client = OpenAI(
+    api_key=os.environ["APIM_API_KEY"],
+    base_url=os.environ["APIM_BASE_URL"],
+)
+
+response = client.chat.completions.create(
+    model="${c.model}",
+    messages=[{"role": "user", "content": "Hello!"}],
+)
+print(response.choices[0].message.content)`
+      },
+      {
+        label: "Install command",
+        lang: "bash",
+        code: (_) => `pip install openai`
+      }
+    ]
+  },
+
+  /* ── 5. Jupyter Notebook ─────────────────────────────────────── */
+  {
+    id: "jupyter",
+    name: "Jupyter Notebook",
+    icon: "📓",
+    description: "Call your APIM-hosted model interactively from a Jupyter notebook.",
+    steps: [
+      "Install the openai package: run the install cell below in your notebook, then restart the kernel.",
+      "Paste the setup cell into the first code cell of your notebook.",
+      "Run the cells in order — you should see a response printed in the output."
+    ],
+    configs: [
+      {
+        label: "Cell 1 — install dependency (run once)",
+        lang: "python",
+        code: (_) => `%pip install openai`
+      },
+      {
+        label: "Cell 2 — configure client",
+        lang: "python",
+        code: (c) =>
+`import os
+from openai import OpenAI
+
+# Option A: hard-code for quick experimentation (remove before sharing notebooks)
+client = OpenAI(
+    api_key="${c.apiKey}",
+    base_url="${c.endpoint}",
+)
+
+# Option B: read from environment (safer for shared/committed notebooks)
+# client = OpenAI(
+#     api_key=os.environ["APIM_API_KEY"],
+#     base_url=os.environ["APIM_BASE_URL"],
+# )`
+      },
+      {
+        label: "Cell 3 — send a request",
+        lang: "python",
+        code: (c) =>
+`response = client.chat.completions.create(
+    model="${c.model}",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user",   "content": "Summarize quantum computing in two sentences."},
+    ],
+)
+
+print(response.choices[0].message.content)`
+      }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════════
+   *  ADD NEW INTEGRATIONS BELOW THIS LINE
+   *  Copy the template above and fill in your values.
+   * ══════════════════════════════════════════════════════ */
+
+];
+
+/* ── State ─────────────────────────────────────────────────────── */
+const state = {
+  endpoint: "",
+  apiKey: "",
+  model: document.getElementById("input-model").value,
+};
+
+/* ── Helpers ───────────────────────────────────────────────────── */
+function esc(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function highlightPlaceholders(code, cfg) {
+  // Highlight placeholder text so users see where their values land
+  const escaped = esc(code);
+  const values = [cfg.apiKey, cfg.endpoint, cfg.model].filter(Boolean);
+  if (!values.length) return escaped;
+  const pattern = values.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  return escaped.replace(new RegExp(`(${pattern})`, 'g'), '<span class="ph">$1</span>');
+}
+
+function buildCode(integration) {
+  return integration.configs.map((cfg, i) => `
+    <div class="code-group">
+      ${integration.configs.length > 1
+        ? `<div class="code-block-label">${esc(cfg.label)}</div>`
+        : ''}
+      <div class="code-wrap">
+        <div class="code-toolbar">
+          <span class="code-lang">${esc(cfg.lang)}</span>
+          <button class="copy-btn" data-int="${integration.id}" data-cfg="${i}"
+                  onclick="copyCode(this, '${integration.id}', ${i})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <pre id="code-${integration.id}-${i}">${highlightPlaceholders(cfg.code(state), state)}</pre>
+      </div>
+    </div>
+  `).join('');
+}
+
+function buildCard(integration) {
+  const steps = integration.steps.map(s => `<li>${esc(s)}</li>`).join('');
+  return `
+    <div class="card" id="card-${integration.id}">
+      <div class="card-header" onclick="toggleCard('${integration.id}')">
+        <div class="card-icon">${integration.icon}</div>
+        <div>
+          <div class="card-title">${esc(integration.name)}</div>
+          <div class="card-desc">${esc(integration.description)}</div>
+        </div>
+        <svg class="card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="steps-label">Setup steps</div>
+          <ol class="steps">${steps}</ol>
+        </div>
+        <div id="configs-${integration.id}">
+          ${buildCode(integration)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAll() {
+  document.getElementById("cards-root").innerHTML =
+    INTEGRATIONS.map(buildCard).join('');
+}
+
+function refreshCodes() {
+  INTEGRATIONS.forEach(integration => {
+    integration.configs.forEach((cfg, i) => {
+      const el = document.getElementById(`code-${integration.id}-${i}`);
+      if (el) el.innerHTML = highlightPlaceholders(cfg.code(state), state);
+    });
+  });
+  // sidebar preview
+  const ep = state.endpoint;
+  const key = state.apiKey;
+  document.getElementById("prev-endpoint").textContent = ep || "not set";
+  document.getElementById("prev-endpoint").style.color = ep ? "var(--blue-dk)" : "var(--gray-400)";
+  document.getElementById("prev-key").textContent = key ? key.slice(0,4) + "••••" + key.slice(-4) : "not set";
+  document.getElementById("prev-key").style.color = key ? "var(--blue-dk)" : "var(--gray-400)";
+  document.getElementById("prev-model").textContent = state.model;
+}
+
+/* ── Interactions ──────────────────────────────────────────────── */
+function toggleCard(id) {
+  document.getElementById(`card-${id}`).classList.toggle("collapsed");
+}
+
+function toggleKey() {
+  const input = document.getElementById("input-key");
+  const icon  = document.getElementById("eye-icon");
+  const show  = input.type === "password";
+  input.type  = show ? "text" : "password";
+  icon.innerHTML = show
+    ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+}
+
+function copyCode(btn, intId, cfgIdx) {
+  const integration = INTEGRATIONS.find(i => i.id === intId);
+  const text = integration.configs[cfgIdx].code(state);
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add("copied");
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 18 4 13"/></svg> Copied!`;
+    setTimeout(() => {
+      btn.classList.remove("copied");
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy`;
+    }, 2000);
+  });
+}
+
+/* ── Event wiring ──────────────────────────────────────────────── */
+document.getElementById("input-endpoint").addEventListener("input", e => {
+  state.endpoint = e.target.value.trim();
+  refreshCodes();
+});
+document.getElementById("input-key").addEventListener("input", e => {
+  state.apiKey = e.target.value.trim();
+  refreshCodes();
+});
+document.getElementById("input-model").addEventListener("change", e => {
+  state.model = e.target.value;
+  refreshCodes();
+});
+
+/* ── Bootstrap ─────────────────────────────────────────────────── */
+state.model = document.getElementById("input-model").value;
+renderAll();
+refreshCodes();
+</script>
+</body>
+</html>
