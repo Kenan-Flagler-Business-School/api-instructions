@@ -421,6 +421,91 @@
     padding: 8px; text-align: center;
     font-size: 12px; color: #666;
   }
+  /* inline copyable code block inside guide content */
+  .guide-code {
+    background: var(--code-bg); border-radius: 6px; overflow: hidden; margin-top: 4px;
+  }
+  .guide-code-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 14px; background: rgba(255,255,255,.05);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .guide-code pre { margin: 0; padding: 12px 14px; font-size: 12px; line-height: 1.6; color: var(--code-fg); white-space: pre; overflow-x: auto; }
+  /* Continue.dev sidebar mock */
+  .mock-continue-panel {
+    background: #1e1e1e; border-radius: 8px; overflow: hidden;
+    border: 1px solid #333; max-width: 340px; font-size: 12px;
+  }
+  .mock-continue-header {
+    background: #252526; padding: 6px 10px; font-size: 11px; font-weight: 700;
+    color: #ccc; letter-spacing: .5px; display: flex; justify-content: space-between;
+    align-items: center; border-bottom: 1px solid #333;
+  }
+  .mock-continue-toolbar {
+    padding: 5px 10px; display: flex; justify-content: space-between;
+    align-items: center; border-bottom: 1px solid #2a2a2a; color: #888; font-size: 11px;
+  }
+  .mock-continue-body {
+    padding: 10px; color: #555; font-size: 12px; min-height: 36px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .mock-continue-bottom {
+    padding: 6px 10px; display: flex; align-items: center; gap: 8px; position: relative;
+  }
+  .mock-pill {
+    background: #2d2d2d; border: 1px solid #444; border-radius: 4px;
+    padding: 3px 8px; font-size: 11px; color: #aaa; display: inline-flex;
+    align-items: center; gap: 4px; cursor: default;
+  }
+  .mock-pill.blue { background: #1a3a5c; border-color: #2b6cb0; color: #63b3ed; }
+  .mock-models-dropdown {
+    position: absolute; left: 80px; bottom: 32px;
+    background: #252526; border: 1px solid #444; border-radius: 6px;
+    min-width: 180px; box-shadow: 0 4px 16px rgba(0,0,0,.4); z-index: 1;
+  }
+  .mock-models-title {
+    padding: 8px 12px 4px; font-size: 11px; font-weight: 700;
+    color: #888; letter-spacing: .4px; display: flex; justify-content: space-between;
+    border-bottom: 1px solid #333;
+  }
+  .mock-models-item {
+    padding: 7px 12px; font-size: 12px; color: #ccc;
+    display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #2a2a2a;
+  }
+  .mock-models-item.add-btn { color: #4fc3f7; border-bottom: none; }
+  .mock-models-item.add-btn.hl { background: #1a3a4a; }
+  .mock-models-hint { padding: 5px 12px; font-size: 10px; color: #555; }
+  /* Add Chat model dialog */
+  .mock-add-model-dialog {
+    background: #252526; border: 1px solid #444; border-radius: 10px;
+    max-width: 320px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  }
+  .mock-add-model-title {
+    text-align: center; padding: 16px 16px 12px; font-size: 15px; font-weight: 700;
+    color: #e0e0e0; border-bottom: 1px solid #333; position: relative;
+  }
+  .mock-add-model-close {
+    position: absolute; right: 14px; top: 14px; color: #666; font-size: 16px;
+  }
+  .mock-add-model-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .mock-add-model-field { display: flex; flex-direction: column; gap: 5px; }
+  .mock-add-model-label { font-size: 12px; font-weight: 600; color: #d0d0d0; }
+  .mock-add-model-select {
+    background: #1e1e1e; border: 1px solid #444; border-radius: 6px;
+    padding: 7px 10px; font-size: 12px; color: #ccc;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .mock-add-model-input {
+    background: #1e1e1e; border: 1px solid #3a3a3a; border-radius: 6px;
+    padding: 7px 10px; font-size: 12px; color: #666; font-style: italic;
+  }
+  .mock-add-model-footer { padding: 0 16px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .mock-connect-btn {
+    background: #3a3a3a; border: none; border-radius: 6px;
+    padding: 9px; text-align: center; font-size: 13px; color: #ccc; font-weight: 500;
+  }
+  .mock-config-link { text-align: center; font-size: 11px; color: #888; }
+  .mock-config-link a { color: #4fc3f7; text-decoration: underline; cursor: default; }
 
   /* ── Responsive ──────────────────────────────────────── */
   @media (max-width: 800px) {
@@ -782,30 +867,31 @@ const INTEGRATIONS = [
     id: "claude-vscode",
     name: "Claude Code — VS Code Extension",
     icon: "🧩",
-    description: "Configure the Claude Code extension to route requests through your APIM gateway.",
+    description: "Install Claude Code via PowerShell and configure it to use your APIM gateway.",
     steps: [
-      "Install the Claude Code extension from the VS Code Marketplace if you haven't already.",
-      "Open VS Code Settings (Ctrl+, / Cmd+,) and search for 'Claude'.",
-      "Alternatively, add the JSON snippet below to your VS Code settings.json (Ctrl+Shift+P → 'Open User Settings JSON').",
-      "Or set the environment variables at the OS level (see Claude Desktop instructions) — the extension inherits them.",
-      "Reload VS Code for settings to take effect."
+      "Open PowerShell and run the install command below — it will print a folder path (e.g. C:\\Users\\you\\.local\\bin).",
+      "Add that printed folder to your Windows PATH: Start → search 'Environment Variables' → Edit the system/user PATH variable → add the folder → OK.",
+      "In VS Code, open Settings: File → Preferences → Settings → Extensions → Claude Code.",
+      "In the Environment Variables section, click 'Edit in settings.json' and paste the snippet below (replacing any existing claudeCode.environmentVariables entry).",
+      "Save settings.json and restart VS Code.",
+      "Open the Claude extension and click New Session.",
+      "To change models, type /model in the prompt and select from the list. You can also run 'claude' directly in the VS Code terminal."
     ],
     configs: [
       {
-        label: "VS Code settings.json",
-        lang: "json",
-        code: (c) =>
-`{
-  "claude.apiKey": "${c.apiKey}",
-  "claude.apiBaseUrl": "${c.endpoint}"
-}`
+        label: "Step 1 — PowerShell install command",
+        lang: "powershell",
+        code: (_) => `irm https://claude.ai/install.ps1 | iex`
       },
       {
-        label: "Environment variables (alternative — same as Claude Desktop above)",
-        lang: "bash",
+        label: "Step 3 — settings.json snippet (paste inside the top-level { } object)",
+        lang: "json",
         code: (c) =>
-`export ANTHROPIC_API_KEY="${c.apiKey}"
-export ANTHROPIC_BASE_URL="${c.endpoint}"`
+`"claudeCode.environmentVariables": [
+  { "name": "CLAUDE_CODE_USE_FOUNDRY",      "value": "1" },
+  { "name": "ANTHROPIC_FOUNDRY_BASE_URL",   "value": "${c.endpoint}" },
+  { "name": "ANTHROPIC_FOUNDRY_API_KEY",    "value": "${c.apiKey}" }
+]`
       }
     ]
   },
@@ -815,29 +901,149 @@ export ANTHROPIC_BASE_URL="${c.endpoint}"`
     id: "continue-dev",
     name: "Continue.dev — VS Code Extension",
     icon: "⚡",
-    description: "Add your APIM-hosted model as a provider in Continue's config file.",
-    steps: [
-      "Install the Continue extension from the VS Code Marketplace.",
-      "Open your Continue config: press Ctrl+Shift+P → 'Continue: Open Config File', or edit ~/.continue/config.yaml directly.",
-      "Add the model block from the snippet below under the 'models' key.",
-      "Save the file — Continue reloads automatically.",
-      "Select your new model from the Continue model switcher in the sidebar."
-    ],
-    configs: [
-      {
-        label: "~/.continue/config.yaml  (add under 'models:')",
-        lang: "yaml",
-        code: (c) =>
-`models:
-  - name: "${c.model} via APIM"
-    provider: openai          # or 'anthropic' if your APIM exposes the native Anthropic API
-    model: "${c.model}"
-    apiKey: "${c.apiKey}"
-    apiBase: "${c.endpoint}"
-    # Optional system prompt:
-    # systemMessage: "You are a helpful assistant."`
-      }
-    ]
+    description: "Configure Continue's YAML config with your APIM models for both OpenAI and Anthropic providers.",
+    steps: [],
+    content: (cfg) => {
+      const key  = cfg.apiKey   || '[your api key here]';
+      const base = (cfg.endpoint || 'https://your-apim.azure-api.net').replace(/\/(openai|anthropic)(\/.*)?$/, '');
+      const oaiBase = base + '/openai/v1';
+      const antBase = base + '/anthropic/v1';
+      const yaml =
+`version: 1.0.0
+schema: v1
+models:
+  - name: gpt-4o
+    provider: openai
+    model: gpt-4o
+    apiKey: ${key}
+    apiBase: ${oaiBase}
+    env:
+      apiVersion: 2025-01-01-preview
+      deployment: gpt-4o
+      apiType: azure-openai
+    requestOptions:
+      headers:
+        api-key: ${key}
+    roles:
+      - chat
+      - edit
+      - apply
+    useResponsesApi: false
+
+  - name: ${cfg.model || 'claude-haiku-4-5'}
+    provider: anthropic
+    model: ${cfg.model || 'claude-haiku-4-5'}
+    apiKey: ${key}
+    apiBase: ${antBase}
+    defaultCompletionOptions:
+      contextLength: 200000
+      maxTokens: 64000`;
+
+      return `
+      <div class="guide-steps">
+
+        <div class="guide-step">
+          <div class="guide-step-num">1</div>
+          <div class="guide-step-body">
+            <p>Install the <strong>Continue</strong> extension from the VS Code Marketplace.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">2</div>
+          <div class="guide-step-body">
+            <p>Open the Continue extension. Click <strong>Select model → + Add Chat model</strong>.</p>
+            <div class="mock-continue-panel">
+              <div class="mock-continue-header"><span>CONTINUE</span><span style="display:flex;gap:8px;">+ ◎ ⚙</span></div>
+              <div class="mock-continue-toolbar"><span>✏ ✕ ◎</span><span>Local Config ∨</span></div>
+              <div class="mock-continue-body">Ask anything, '@' to add context</div>
+              <div class="mock-continue-bottom">
+                <span class="mock-pill">⚡ Agent ∨</span>
+                <span class="mock-pill">Select model ∨</span>
+                <div class="mock-models-dropdown">
+                  <div class="mock-models-title"><span>Models</span><span>⚙</span></div>
+                  <div class="mock-models-item" style="color:#888;font-style:italic;">No models configured</div>
+                  <div class="mock-models-item add-btn hl">+ Add Chat model</div>
+                  <div class="mock-models-hint">Ctrl&nbsp; to toggle model</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">3</div>
+          <div class="guide-step-body">
+            <p>In the <strong>Add Chat model</strong> dialog, ignore the form fields — instead click <strong>config file</strong> at the bottom. This opens the YAML config directly.</p>
+            <div class="mock-add-model-dialog">
+              <div class="mock-add-model-title">Add Chat model<span class="mock-add-model-close">✕</span></div>
+              <div class="mock-add-model-body">
+                <div class="mock-add-model-field">
+                  <div class="mock-add-model-label">Provider</div>
+                  <div class="mock-add-model-select"><span>🟦 Azure OpenAI</span><span>⇅</span></div>
+                </div>
+                <div class="mock-add-model-field">
+                  <div class="mock-add-model-label">Model</div>
+                  <div class="mock-add-model-select"><span>⚙ GPT-4o</span><span>⇅</span></div>
+                </div>
+                <div class="mock-add-model-field">
+                  <div class="mock-add-model-label">API key</div>
+                  <div class="mock-add-model-input">Enter your Azure OpenAI API key</div>
+                </div>
+                <div class="mock-add-model-field">
+                  <div class="mock-add-model-label">API Base</div>
+                  <div class="mock-add-model-input">e.g. http://localhost:8080</div>
+                </div>
+              </div>
+              <div class="mock-add-model-footer">
+                <div class="mock-connect-btn">Connect</div>
+                <div class="mock-config-link">This will update your <a>config file</a> ← click here</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">4</div>
+          <div class="guide-step-body">
+            <p>Replace the contents of the config file with the YAML below. It includes one <strong>OpenAI</strong> model and one <strong>Anthropic</strong> model — note they use <em>different</em> apiBase paths (<code>/openai/v1</code> vs <code>/anthropic/v1</code>). Add more models by copying a full <code>- name:</code> block. The <strong>model name must match exactly</strong> what's in your BlueChipAI API Profile.</p>
+            <div class="guide-code" id="continue-yaml-block">
+              <div class="guide-code-toolbar">
+                <span class="code-lang">yaml — ~/.continue/config.yaml</span>
+                <button class="copy-btn" onclick="copyGuideCode(this,'continue-yaml-block')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <pre id="continue-yaml-pre">${esc(yaml)}</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">5</div>
+          <div class="guide-step-body">
+            <p><strong>Save</strong> the config file. Your models will immediately appear in the Continue model selector next to Agent.</p>
+            <div class="mock-continue-panel">
+              <div class="mock-continue-toolbar"><span>✏ ✕ ◎</span><span>Local Config ∨</span></div>
+              <div class="mock-continue-body">Ask anything, '@' to add context</div>
+              <div class="mock-continue-bottom">
+                <span class="mock-pill">⚡ Agent ∨</span>
+                <span class="mock-pill blue">⚙ ${cfg.model || 'claude-haiku-4-5'} ∨</span>
+                <div class="mock-models-dropdown">
+                  <div class="mock-models-title"><span>Models</span><span>⚙</span></div>
+                  <div class="mock-models-item">⚙ ${cfg.model || 'claude-haiku-4-5'} <span style="margin-left:auto;color:#666;">⚙</span></div>
+                  <div class="mock-models-item">⚙ gpt-4o <span style="margin-left:auto;color:#666;">⚙</span></div>
+                  <div class="mock-models-item add-btn">+ Add Chat model</div>
+                  <div class="mock-models-hint">Ctrl&nbsp; to toggle model</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>`;
+    },
   },
 
   /* ── 4. Python (OpenAI-compatible client) ───────────────────── */
@@ -1069,6 +1275,19 @@ function refreshCodes() {
   document.getElementById("prev-key").textContent = key ? key.slice(0,4) + "••••" + key.slice(-4) : "not set";
   document.getElementById("prev-key").style.color = key ? "var(--blue-dk)" : "var(--gray-400)";
   document.getElementById("prev-model").textContent = state.model;
+}
+
+function copyGuideCode(btn, blockId) {
+  const pre = document.getElementById(blockId)?.querySelector('pre');
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.classList.add("copied");
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 18 4 13"/></svg> Copied!`;
+    setTimeout(() => {
+      btn.classList.remove("copied");
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2v1"/></svg> Copy`;
+    }, 2000);
+  });
 }
 
 /* ── Interactions ──────────────────────────────────────────────── */
