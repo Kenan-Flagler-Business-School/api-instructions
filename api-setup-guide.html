@@ -521,6 +521,35 @@
   .mock-config-link { text-align: center; font-size: 11px; color: #888; }
   .mock-config-link a { color: #4fc3f7; text-decoration: underline; cursor: default; }
 
+  /* Connector settings mock (Claude Desktop) */
+  .mock-connector-panel {
+    background: #1a1a1a; border-radius: 10px; padding: 16px 18px;
+    max-width: 420px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .mock-connector-crumb { color: #777; font-size: 11px; }
+  .mock-connector-crumb strong { color: #ccc; }
+  .mock-connector-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #242424; border: 1px solid #333; border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .mock-connector-name { color: #e0e0e0; font-size: 13px; font-weight: 600; }
+  .mock-connector-sub { color: #777; font-size: 11px; margin-top: 1px; }
+  .mock-connector-add-btn {
+    background: #3a3a3a; color: #ddd; border-radius: 6px;
+    padding: 6px 14px; font-size: 12px; font-weight: 600; align-self: flex-start;
+  }
+  .mock-connector-type-opt {
+    display: flex; align-items: center; gap: 10px;
+    background: #242424; border: 1px solid #333; border-radius: 6px; padding: 8px 12px;
+  }
+  .mock-connector-type-opt.hl { border-color: #3b82f6; background: #1e2a3a; }
+  .mock-connector-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #16321f; color: #6ee7a0; border-radius: 99px;
+    font-size: 11px; font-weight: 600; padding: 3px 10px; align-self: flex-start;
+  }
+
   /* ── Responsive ──────────────────────────────────────── */
   @media (max-width: 800px) {
     .layout { grid-template-columns: 1fr; }
@@ -799,13 +828,16 @@ const INTEGRATIONS = [
     id: "claude-desktop",
     name: "Claude Desktop (Cowork)",
     icon: "🖥️",
-    description: "Configure Claude Desktop to route through your APIM gateway using Developer Mode.",
+    description: "Configure Claude Desktop to route through your APIM gateway using Developer Mode, plus optional Google Drive connector setup.",
     steps: [],
     content: (cfg) => {
       const ep  = cfg.endpoint || 'https://your-apim.azure-api.net/anthropic';
       const key = cfg.apiKey   ? '•'.repeat(Math.min(cfg.apiKey.length, 32)) : '••••••••••••••••••••••••••••••••';
       const mod = cfg.model    || 'claude-sonnet-4-5';
       const epCls = cfg.endpoint ? '' : ' mock-ph';
+      const epWarning = (cfg.endpoint && !cfg.endpoint.replace(/\/$/, '').endsWith('/anthropic'))
+        ? `<div style="color:#f59e0b;font-size:11px;margin-top:4px;">⚠ Your endpoint doesn't end with <code>/anthropic</code> — add it before saving.</div>`
+        : '';
       return `
       <div class="guide-steps">
 
@@ -828,7 +860,7 @@ const INTEGRATIONS = [
         <div class="guide-step">
           <div class="guide-step-num">3</div>
           <div class="guide-step-body">
-            <p>Select <strong>Gateway</strong>, fill in your credentials, and set <strong>Gateway auth scheme</strong> to <code>x-api-key</code>.</p>
+            <p>Select <strong>Gateway</strong>, fill in your credentials, and set <strong>Gateway auth scheme</strong> to <code>x-api-key</code>. <strong>Important:</strong> the Gateway base URL must end with <code>/anthropic</code> — not just your bare endpoint.</p>
             <div class="mock-dark-panel">
               <div class="mock-dark-title">Connection</div>
               <div class="mock-dark-subtitle">Choose where Claude Desktop sends inference requests.</div>
@@ -853,8 +885,9 @@ const INTEGRATIONS = [
               <div class="mock-dark-section">Gateway Credentials</div>
               <div class="mock-dark-field">
                 <div class="mock-dark-field-label">Gateway base URL <span class="mock-required">Required</span></div>
-                <div class="mock-dark-field-desc">Full URL of the inference gateway endpoint.</div>
+                <div class="mock-dark-field-desc">Full URL of the inference gateway endpoint. <strong style="color:#f59e0b;">Must end with /anthropic</strong></div>
                 <div class="mock-dark-input${epCls}">${ep}</div>
+                ${epWarning}
               </div>
               <div class="mock-dark-field">
                 <div class="mock-dark-field-label">Gateway API key <span class="mock-required">Required</span></div>
@@ -899,6 +932,63 @@ const INTEGRATIONS = [
           <div class="guide-step-num">6</div>
           <div class="guide-step-body">
             <p><strong>Troubleshooting (Windows only):</strong> If Claude shows a "Virtual Machine Platform not available" banner, go to <strong>Windows Start → search "Windows features" → Turn Windows features on or off</strong>. Check <strong>Virtual Machine Platform</strong> and restart Windows.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">7</div>
+          <div class="guide-step-body">
+            <p><strong>Optional — connect Google Drive.</strong> Because this is a custom/gateway inference setup, there's no claude.ai "Customize → Connectors" page. Instead, go back to <strong>≡ → Developer → Configure third-party Inference</strong> and open the <strong>Connectors &amp; extensions</strong> section in the sidebar.</p>
+            <div class="mock-dark-panel">
+              <div class="mock-dark-section">Configure Third-Party Inference</div>
+              <div class="mock-radio-grid" style="grid-template-columns:1fr;gap:4px;">
+                <div class="mock-radio-opt" style="padding:7px 12px;"><div class="mock-radio-label" style="font-size:12px;">Connection</div></div>
+                <div class="mock-radio-opt" style="padding:7px 12px;"><div class="mock-radio-label" style="font-size:12px;">Identity &amp; Models</div></div>
+                <div class="mock-radio-opt selected" style="padding:7px 12px;"><div class="mock-radio-label" style="font-size:12px;">Connectors &amp; extensions</div></div>
+                <div class="mock-radio-opt" style="padding:7px 12px;"><div class="mock-radio-label" style="font-size:12px;">Sandbox &amp; workspace</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">8</div>
+          <div class="guide-step-body">
+            <p>Click <strong>+ Add connector</strong>, give it a name (e.g. <code>drive</code> — this is what shows in your connectors list), and enter the <strong>remote MCP server URL</strong>.</p>
+            <div class="mock-dark-panel">
+              <div class="mock-dark-section">Connectors &amp; extensions</div>
+              <div class="mock-dark-field">
+                <div class="mock-dark-field-label">Name</div>
+                <div class="mock-dark-input">drive</div>
+              </div>
+              <div class="mock-dark-field">
+                <div class="mock-dark-field-label">MCP server URL <span class="mock-required">Required</span></div>
+                <div class="mock-dark-field-desc">Remote MCP server (Streamable HTTP). We use a single shared Composio gateway URL for all connector types.</div>
+                <div class="mock-dark-input">https://connect.composio.dev/mcp</div>
+              </div>
+              <div class="mock-add-btn">+ Add connector</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">9</div>
+          <div class="guide-step-body">
+            <p>Claude will detect the authentication type the server needs. Choose <strong>Sign in now</strong> so you can authorize immediately, and keep the recommended OAuth identity option unless told otherwise. Click <strong>Save</strong> / <strong>Apply locally</strong>.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">10</div>
+          <div class="guide-step-body">
+            <p>A browser window opens asking you to sign in to your <strong>Google account</strong> and approve access. Once approved, return to Claude Desktop — <strong>drive</strong> will show as <strong>Connected</strong>, and Claude can now search and read files from your Google Drive.</p>
+            <div class="mock-dark-panel" style="max-width:300px;">
+              <div class="mock-connector-row">
+                <div><div class="mock-connector-name">drive</div><div class="mock-connector-sub">Google Drive via Composio</div></div>
+                <div class="mock-connector-status">● Connected</div>
+              </div>
+            </div>
+            <p style="color:var(--gray-400);font-size:12px;">Note: this connector URL is shared across users — each person signs in with their own Google account during the authorization step, so everyone only sees their own Drive files.</p>
           </div>
         </div>
 
